@@ -34,7 +34,18 @@ class UserImage: NSObject {
         media["commentsCount"] = 0
         
         // Save object (following function will save the object in Parse asynchronously)
-        media.saveInBackgroundWithBlock(completion)
+        media.saveInBackgroundWithBlock { (success:Bool, error:NSError?) -> Void in
+            if let completion = completion{
+                
+                completion(success, error)
+            }
+            if let caption = caption{
+                if success{
+                    UserComment.postUserComment(caption, image: media, withCompletion: nil)
+                }
+            }
+            
+        }
         return media
     }
     

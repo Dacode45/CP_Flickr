@@ -47,7 +47,7 @@ class ImagePickerViewController: UIViewController, UIImagePickerControllerDelega
             
             let edited = info[UIImagePickerControllerEditedImage] as! UIImage
             self.newImageView.image = edited
-            
+            dismissViewControllerAnimated(true, completion: nil)
     }
     
     func imagePicker(){
@@ -77,6 +77,7 @@ class ImagePickerViewController: UIViewController, UIImagePickerControllerDelega
         MBProgressHUD.showHUDAddedTo(self.view, animated: true)
         UserImage.postUserImage(newImageView.image, withCaption: commentField.text) { (success: Bool, error: NSError?) -> Void in
             MBProgressHUD.hideHUDForView(self.view, animated: true)
+            self.alert("Upload done", message: "Check your image in the home page")
             print(error)
         }
     }
@@ -84,6 +85,17 @@ class ImagePickerViewController: UIViewController, UIImagePickerControllerDelega
     @IBAction func getNewImage(sender: AnyObject) {
         presentImagePicker()
     }
+    
+    func alert(title: String, message: String){
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .ActionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
+            // handle case of user canceling. Doing nothing will dismiss the view.
+        }
+        alertController.addAction(cancelAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+        
+    }
+
     /*
     // MARK: - Navigation
 

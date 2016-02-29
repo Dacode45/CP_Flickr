@@ -23,6 +23,11 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             collectionView.reloadData()
         }
     }
+    var selectedImage : PFObject?{
+        didSet{
+            print("Selected Image")
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.delegate = self
@@ -87,6 +92,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ImageCell", forIndexPath: indexPath) as! ImageCell
+        //print("here")
+        
         cell.image = images![indexPath.row]
         return cell
     }
@@ -148,23 +155,36 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             showOnlyMine = true
             switchQueryButton.title = "Show Mine"
         }
-        let tempImages = images
-        images = tempImages
+        
+        images = []
+        getInitialImages()
+        collectionView.reloadData()
     }
     
     func presentAlert(title:String, message: String){
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         presentViewController(alertController, animated: true, completion: nil)
     }
-    /*
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        selectedImage = images![indexPath.row]
+        performSegueWithIdentifier("detailSegue", sender: self)
+    }
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        print("segueing: \(sender)")
+        if let detailsView = segue.destinationViewController as? ImageDetailViewController{
+            
+            
+            detailsView.tempImage = selectedImage
+        }
     }
-    */
+    
 
 }
 

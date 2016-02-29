@@ -17,7 +17,7 @@ class CommentCell: UITableViewCell {
     var comment: PFObject?{
         didSet{
          usernameLabel.text = comment?.objectForKey("comment") as? String
-         commentField.text = comment?.objectForKey("author")as? String
+         commentField.text = comment?.objectForKey("author") as? String
         }
     }
     

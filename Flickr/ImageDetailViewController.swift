@@ -15,22 +15,23 @@ class ImageDetailViewController: UIViewController, UITableViewDataSource, UITabl
     @IBOutlet weak var downVoteButton: UIButton!
     @IBOutlet weak var pointsCounter: UILabel!
     @IBOutlet weak var commentField: UITextField!
-    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     
     @IBOutlet weak var commentView: UIView!
 
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var tableView: UITableView!
     
     var isMoreDataLoading = false
     var loadingMoreView:InfiniteScrollActivityView?
     let estimatedHeight: CGFloat = 300
-    
+    var initializationDone = false
+    var tempImage: PFObject?
     var image: PFObject?{
         didSet{
             let imageFile = image?.objectForKey("media") as! PFFile
             imageFile.getDataInBackgroundWithBlock { (data:NSData?, error:NSError?) -> Void in
-                if(error == nil){
+                if(error == nil && data != nil){
                     self.imageView.image = UIImage(data:data!)
                     self.imageView.layer.cornerRadius = 30
                     self.imageView.layer.masksToBounds = true
@@ -43,7 +44,10 @@ class ImageDetailViewController: UIViewController, UITableViewDataSource, UITabl
                     self.comments = c
                 }
             }
-            pointsCounter.text = "\(image?.objectForKey("likesCount")) Points"
+            if initializationDone{
+                pointsCounter.text = String((image?.objectForKey("likesCount"))!) + " Points"
+            }
+            
         }
     }
     var comments: [PFObject]?{
@@ -76,8 +80,8 @@ class ImageDetailViewController: UIViewController, UITableViewDataSource, UITabl
         
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: commentView.frame.origin.y + commentView.frame.size.height)
         // Do any additional setup after loading the view.
-        
-        
+        initializationDone = true
+        image = tempImage
     }
 
     override func didReceiveMemoryWarning() {
@@ -133,7 +137,7 @@ class ImageDetailViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     @IBAction func downvote(sender: AnyObject) {
-        image?.incrementKey("likesCount")
+        image?.incrementKey("likesCount", byAmount: -1)
         let oldUpTint = upvoteButton.imageView?.tintColor
         let oldDownTint = downVoteButton.imageView?.tintColor
         upvoteButton.imageView?.tintColor = UIColor.blackColor()
